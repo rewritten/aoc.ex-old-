@@ -6,8 +6,8 @@ Code.require_file("2021/submarine.ex")
 {:ok, aiming_submarine} = Submarine.new()
 
 for line <- File.stream!("2021/2.txt") do
-  Submarine.command(simple_submarine, :move, line)
-  Submarine.command(aiming_submarine, :aim, line)
+  Submarine.command(simple_submarine, :move, String.trim(line))
+  Submarine.command(aiming_submarine, :aim, String.trim(line))
 end
 
 simple_submarine

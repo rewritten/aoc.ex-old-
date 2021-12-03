@@ -1,23 +1,20 @@
-
 defmodule Submarine do
   use GenServer
 
-  import Complex, except: [parse: 1]
+  import Complex
 
   defstruct loc: %Complex{}, aim: %Complex{re: 1}
 
   def new(opts \\ []), do: GenServer.start_link(__MODULE__, :ok, opts)
 
-  def command(pid, cmd, line) do
-    [a, b] = String.split(line)
-    n = String.to_integer(b)
+  def command(pid, cmd, <<"up ", n::binary>>),
+    do: GenServer.cast(pid, {cmd, %Complex{im: -String.to_integer(n)}})
 
-    case a do
-      "forward" -> GenServer.cast(pid, {:forward, n})
-      "up" -> GenServer.cast(pid, {cmd, %Complex{im: -n}})
-      "down" -> GenServer.cast(pid, {cmd, %Complex{im: n}})
-    end
-  end
+  def command(pid, cmd, <<"down ", n::binary>>),
+    do: GenServer.cast(pid, {cmd, %Complex{im: String.to_integer(n)}})
+
+  def command(pid, _, <<"forward ", n::binary>>),
+    do: GenServer.cast(pid, {:forward, String.to_integer(n)})
 
   @impl true
   def init(_), do: {:ok, %__MODULE__{}}
